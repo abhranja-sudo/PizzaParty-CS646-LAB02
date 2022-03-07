@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlin.math.ceil
 
 const val TAG = "MainActivity"
+private const val KEY_TOTAL_PIZZAS = "totalPizzas"
 
 /**
  * MainActivity responsible for taking user input and displaying output for home screen.
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var numAttendEditText: EditText
     private lateinit var numPizzasTextView: TextView
     private lateinit var howHungryRadioGroup: RadioGroup
-
+    private var totalPizzas = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +32,17 @@ class MainActivity : AppCompatActivity() {
         numPizzasTextView = findViewById(R.id.num_pizzas_text_view)
         howHungryRadioGroup = findViewById(R.id.hungry_radio_group)
 
+        // Restore state
+        if (savedInstanceState != null) {
+            totalPizzas = savedInstanceState.getInt(KEY_TOTAL_PIZZAS)
+            displayTotal()
+        }
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_TOTAL_PIZZAS, totalPizzas)
     }
 
     /**
@@ -54,10 +66,13 @@ class MainActivity : AppCompatActivity() {
 
         // Get the number of pizzas needed
         val calc = PizzaCalculator(numAttend, hungerLevel)
-        val totalPizzas = calc.totalPizzas
+        totalPizzas = calc.totalPizzas
 
-        // Place totalPizzas into the string resource and display
+        displayTotal()
+    }
+
+    private fun displayTotal() {
         val totalText = getString(R.string.total_pizzas, totalPizzas)
-        numPizzasTextView.setText(totalText)
+        numPizzasTextView.text = totalText
     }
 }
